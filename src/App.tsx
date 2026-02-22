@@ -23,10 +23,36 @@ import {
   ChevronRight,
   Loader2,
   CheckCircle2,
-  Quote
+  Quote,
+  DollarSign,
+  Activity
 } from 'lucide-react';
+import mermaid from 'mermaid';
 import { analyzeTranscript } from './services/geminiService';
 import { cn } from './lib/utils';
+
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'neutral',
+  securityLevel: 'loose',
+});
+
+const Mermaid = ({ chart }: { chart: string }) => {
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (ref.current && chart) {
+      ref.current.removeAttribute('data-processed');
+      mermaid.contentLoaded();
+    }
+  }, [chart]);
+
+  return (
+    <div className="mermaid bg-white p-4 rounded-xl overflow-x-auto" ref={ref}>
+      {chart}
+    </div>
+  );
+};
 
 interface AnalysisResult {
   client_snapshot: {
@@ -47,6 +73,8 @@ interface AnalysisResult {
     transcript_reference: string;
     confidence_score: number;
     pricing_model: string;
+    estimated_monthly_cost: string;
+    cost_breakdown: string[];
     why_it_fits: string;
     complementary_solutions: string[];
   }[];
@@ -59,6 +87,10 @@ interface AnalysisResult {
     result: string;
     industry_relevance: string;
   }[];
+  diagrams: {
+    use_case_diagram: string;
+    tech_architecture_diagram: string;
+  };
   recommended_pilot: {
     name: string;
     why_this_pilot: string;
@@ -360,6 +392,21 @@ export default function App() {
                                       "{rec.transcript_reference}"
                                     </p>
                                   </div>
+                                  <div className="space-y-2 pt-2 border-t border-black/5">
+                                    <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-black/30">
+                                      <DollarSign className="w-3 h-3" />
+                                      AWS Pricing Details
+                                    </div>
+                                    <p className="text-sm font-bold text-black/80">{rec.estimated_monthly_cost}</p>
+                                    <ul className="space-y-1">
+                                      {rec.cost_breakdown.map((item, idx) => (
+                                        <li key={idx} className="text-[10px] text-black/50 flex items-center gap-2">
+                                          <div className="w-1 h-1 bg-black/20 rounded-full" />
+                                          {item}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
                                 </div>
                                 <div className="space-y-4">
                                   <div className="space-y-2">
@@ -395,6 +442,30 @@ export default function App() {
                           </div>
                         </motion.div>
                       ))}
+                    </div>
+                  </section>
+
+                  {/* Diagrams */}
+                  <section className="space-y-8">
+                    <div className="flex items-center gap-2 text-black/40">
+                      <Activity className="w-4 h-4" />
+                      <span className="text-[11px] font-bold uppercase tracking-widest">Architectural Visualizations</span>
+                    </div>
+                    <div className="grid grid-cols-1 gap-8">
+                      <div className="bg-white border border-black/5 rounded-3xl p-8 shadow-sm space-y-6">
+                        <div className="flex items-center gap-2 text-black/40">
+                          <Users className="w-4 h-4" />
+                          <span className="text-[11px] font-bold uppercase tracking-widest">Use Case Diagram</span>
+                        </div>
+                        <Mermaid chart={result?.diagrams.use_case_diagram || ''} />
+                      </div>
+                      <div className="bg-white border border-black/5 rounded-3xl p-8 shadow-sm space-y-6">
+                        <div className="flex items-center gap-2 text-black/40">
+                          <Network className="w-4 h-4" />
+                          <span className="text-[11px] font-bold uppercase tracking-widest">System Tech Architecture</span>
+                        </div>
+                        <Mermaid chart={result?.diagrams.tech_architecture_diagram || ''} />
+                      </div>
                     </div>
                   </section>
 

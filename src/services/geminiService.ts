@@ -31,10 +31,12 @@ export const ARCHITECT_SCHEMA = {
           transcript_reference: { type: Type.STRING },
           confidence_score: { type: Type.NUMBER },
           pricing_model: { type: Type.STRING },
+          estimated_monthly_cost: { type: Type.STRING, description: "Specific dollar amount (e.g., $150.00/mo)" },
+          cost_breakdown: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Detailed breakdown of costs for AWS services." },
           why_it_fits: { type: Type.STRING },
           complementary_solutions: { type: Type.ARRAY, items: { type: Type.STRING }, description: "Cross-sell opportunities." },
         },
-        required: ["solution_name", "architecture_layer", "business_value", "technical_reason", "transcript_reference", "confidence_score", "pricing_model", "why_it_fits", "complementary_solutions"],
+        required: ["solution_name", "architecture_layer", "business_value", "technical_reason", "transcript_reference", "confidence_score", "pricing_model", "estimated_monthly_cost", "cost_breakdown", "why_it_fits", "complementary_solutions"],
       },
     },
     matched_use_cases: {
@@ -52,6 +54,14 @@ export const ARCHITECT_SCHEMA = {
         },
         required: ["scenario_name", "format", "situation", "problem_or_task", "action", "result", "industry_relevance"],
       },
+    },
+    diagrams: {
+      type: Type.OBJECT,
+      properties: {
+        use_case_diagram: { type: Type.STRING, description: "Mermaid.js code for a Use Case diagram." },
+        tech_architecture_diagram: { type: Type.STRING, description: "Mermaid.js code for a System Technical Architecture diagram." },
+      },
+      required: ["use_case_diagram", "tech_architecture_diagram"],
     },
     recommended_pilot: {
       type: Type.OBJECT,
@@ -86,7 +96,7 @@ export const ARCHITECT_SCHEMA = {
     },
     executive_summary: { type: Type.STRING },
   },
-  required: ["client_snapshot", "core_drivers", "top_recommendations", "matched_use_cases", "recommended_pilot", "implementation_phases", "next_steps", "executive_summary"],
+  required: ["client_snapshot", "core_drivers", "top_recommendations", "matched_use_cases", "diagrams", "recommended_pilot", "implementation_phases", "next_steps", "executive_summary"],
 };
 
 export async function analyzeTranscript(transcript: string) {
