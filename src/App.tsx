@@ -41,14 +41,23 @@ const Mermaid = ({ chart }: { chart: string }) => {
   const ref = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    if (ref.current && chart) {
-      ref.current.removeAttribute('data-processed');
-      mermaid.contentLoaded();
-    }
+    const renderChart = async () => {
+      if (ref.current && chart) {
+        try {
+          ref.current.removeAttribute('data-processed');
+          await mermaid.run({
+            nodes: [ref.current],
+          });
+        } catch (err) {
+          console.error('Mermaid render error:', err);
+        }
+      }
+    };
+    renderChart();
   }, [chart]);
 
   return (
-    <div className="mermaid bg-white p-4 rounded-xl overflow-x-auto" ref={ref}>
+    <div className="mermaid bg-white p-4 rounded-xl overflow-x-auto min-h-[200px] flex items-center justify-center" ref={ref}>
       {chart}
     </div>
   );
@@ -120,11 +129,24 @@ const LAYER_ICONS: Record<string, React.ReactNode> = {
   AI: <BrainCircuit className="w-5 h-5" />,
 };
 
+const SAMPLE_TRANSCRIPT = `Architect: Thanks for joining today. I understand your team is looking to modernize the core claims processing system. Can you walk me through the current state?
+CTO: Right now, we're on-prem. It's a monolithic Java app running on aging hardware. We're seeing 15-minute downtime windows every Tuesday during deployments.
+Architect: That's significant. What's the business impact?
+VP Ops: It's costing us about $50k per hour in lost productivity for our adjusters. We need to get to a 99.99% availability target.
+Architect: Understood. How are you handling identity and security today?
+Security Lead: It's all LDAP. We want to move to a Zero Trust model but the board is worried about the cost of a full overhaul.
+Architect: What about data?
+Data Engineer: We have 40TB of claims data in a legacy SQL Server. It's slow. We want to run some ML models for fraud detection but the database can't handle the analytical load.
+Architect: So, the goals are: high availability, Zero Trust security, and an AI-ready data platform. Any constraints?
+CTO: We have a hard deadline of 6 months for the pilot because our data center lease is up. And we need to keep monthly OpEx under $20k for the initial phase.`;
+
 export default function App() {
   const [transcript, setTranscript] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const loadSample = () => setTranscript(SAMPLE_TRANSCRIPT);
 
   const handleAnalyze = async () => {
     if (!transcript.trim()) return;
@@ -145,16 +167,23 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#F5F5F4] text-[#1A1A1A] font-sans selection:bg-black selection:text-white">
       {/* Header */}
-      <header className="border-b border-black/5 bg-white sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-              <Cloud className="text-white w-5 h-5" />
-            </div>
-            <h1 className="font-semibold tracking-tight text-lg">Cloud Architect Discovery Analyst</h1>
-          </div>
+      <header className="border-b border-black/5 bg-white sticky top-0 z-50 py-4">
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-black/40">Enterprise Edition v1.0</span>
+            <div className="w-10 h-10 bg-red-600 rounded flex items-center justify-center shadow-lg shadow-red-500/20">
+              <span className="text-white font-black text-xl">!</span>
+            </div>
+            <div>
+              <h1 className="font-black tracking-tighter text-2xl leading-none">
+                SPIKED<span className="text-red-600">AI</span>
+              </h1>
+              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-black/40 mt-1">
+                Cognitive Intelligence for Cloud Architect Recommendation Simulator
+              </p>
+            </div>
+          </div>
+          <div className="hidden md:flex items-center gap-4">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-black/20 px-3 py-1 border border-black/5 rounded-full">Enterprise Edition v1.0</span>
           </div>
         </div>
       </header>
@@ -165,9 +194,17 @@ export default function App() {
           {/* Input Section */}
           <div className="lg:col-span-5 space-y-8">
             <section className="space-y-4">
-              <div className="flex items-center gap-2 text-black/40">
-                <FileText className="w-4 h-4" />
-                <span className="text-[11px] font-bold uppercase tracking-widest">Input Transcript</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-black/40">
+                  <FileText className="w-4 h-4" />
+                  <span className="text-[11px] font-bold uppercase tracking-widest">Input Transcript</span>
+                </div>
+                <button 
+                  onClick={loadSample}
+                  className="text-[10px] font-bold uppercase tracking-widest text-black/40 hover:text-black transition-colors"
+                >
+                  Load Sample Transcript
+                </button>
               </div>
               <div className="relative group">
                 <textarea
@@ -255,16 +292,50 @@ export default function App() {
                   <section className="space-y-6">
                     <div className="flex items-center gap-2 text-black/40">
                       <Target className="w-4 h-4" />
-                      <span className="text-[11px] font-bold uppercase tracking-widest">Executive Summary</span>
+                      <span className="text-[11px] font-bold uppercase tracking-widest">Executive Strategy</span>
                     </div>
-                    <div className="bg-white border border-black/5 rounded-3xl p-8 shadow-sm">
+                    <div className="bg-white border-l-4 border-black rounded-r-3xl p-8 shadow-sm">
                       <p className="text-xl font-serif italic text-black/80 leading-relaxed">
                         "{result?.executive_summary}"
                       </p>
                     </div>
                   </section>
 
-                  {/* Client Snapshot */}
+                  {/* Immediate Next Steps & Validation */}
+                  <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-black text-white rounded-3xl p-8 shadow-xl space-y-6">
+                      <div className="flex items-center gap-2 text-white/40">
+                        <Rocket className="w-4 h-4" />
+                        <span className="text-[11px] font-bold uppercase tracking-widest">Immediate Actions</span>
+                      </div>
+                      <div className="space-y-6">
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Demo Direction</p>
+                          <p className="text-sm text-white/90 leading-relaxed font-medium">{result?.next_steps.demo_direction}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">Follow-up Focus</p>
+                          <p className="text-sm text-white/90 leading-relaxed font-medium">{result?.next_steps.follow_up_focus}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-white border border-black/5 rounded-3xl p-8 shadow-sm space-y-6">
+                      <div className="flex items-center gap-2 text-black/40">
+                        <Target className="w-4 h-4" />
+                        <span className="text-[11px] font-bold uppercase tracking-widest">Validation Checklist</span>
+                      </div>
+                      <div className="space-y-3">
+                        {result?.next_steps.validation_questions.map((q, i) => (
+                          <div key={i} className="flex gap-3 text-sm group">
+                            <div className="w-5 h-5 rounded border border-black/10 flex items-center justify-center shrink-0 group-hover:border-black transition-colors">
+                              <span className="text-[10px] font-bold">?</span>
+                            </div>
+                            <span className="text-black/70 italic leading-tight">{q}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
                   <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="bg-white border border-black/5 rounded-3xl p-8 shadow-sm space-y-6">
                       <div className="flex items-center gap-2 text-black/40">
@@ -392,20 +463,29 @@ export default function App() {
                                       "{rec.transcript_reference}"
                                     </p>
                                   </div>
-                                  <div className="space-y-2 pt-2 border-t border-black/5">
-                                    <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-black/30">
-                                      <DollarSign className="w-3 h-3" />
-                                      AWS Pricing Details
+                                  <div className="space-y-3 p-4 bg-emerald-50/50 rounded-xl border border-emerald-100">
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-emerald-700">
+                                        <DollarSign className="w-3 h-3" />
+                                        AWS Financial Estimate
+                                      </div>
+                                      <span className="text-xs font-bold text-emerald-700">{rec.estimated_monthly_cost}</span>
                                     </div>
-                                    <p className="text-sm font-bold text-black/80">{rec.estimated_monthly_cost}</p>
-                                    <ul className="space-y-1">
-                                      {rec.cost_breakdown.map((item, idx) => (
-                                        <li key={idx} className="text-[10px] text-black/50 flex items-center gap-2">
-                                          <div className="w-1 h-1 bg-black/20 rounded-full" />
-                                          {item}
-                                        </li>
-                                      ))}
-                                    </ul>
+                                    <div className="space-y-1.5">
+                                      <p className="text-[9px] font-bold uppercase tracking-widest text-emerald-600/50">Cost Breakdown</p>
+                                      <ul className="space-y-1">
+                                        {rec.cost_breakdown.map((item, idx) => (
+                                          <li key={idx} className="text-[10px] text-emerald-800/70 flex items-start gap-2">
+                                            <div className="w-1 h-1 bg-emerald-400 rounded-full mt-1 shrink-0" />
+                                            {item}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                    <div className="pt-2 border-t border-emerald-100">
+                                      <p className="text-[9px] font-bold uppercase tracking-widest text-emerald-600/50">Model</p>
+                                      <p className="text-[10px] font-semibold text-emerald-800">{rec.pricing_model}</p>
+                                    </div>
                                   </div>
                                 </div>
                                 <div className="space-y-4">
@@ -418,18 +498,12 @@ export default function App() {
                                       {rec.business_value}
                                     </p>
                                   </div>
-                                  <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1">
-                                      <p className="text-[9px] font-bold uppercase tracking-widest text-black/30">Price Model</p>
-                                      <p className="text-[11px] font-semibold text-black/60">{rec.pricing_model}</p>
-                                    </div>
-                                    <div className="space-y-1">
-                                      <p className="text-[9px] font-bold uppercase tracking-widest text-black/30">Cross-sell</p>
-                                      <div className="flex flex-wrap gap-1">
-                                        {rec.complementary_solutions.map((sol, idx) => (
-                                          <span key={idx} className="text-[9px] bg-black/5 px-1.5 py-0.5 rounded">{sol}</span>
-                                        ))}
-                                      </div>
+                                  <div className="space-y-2">
+                                    <p className="text-[9px] font-bold uppercase tracking-widest text-black/30">Cross-sell Opportunities</p>
+                                    <div className="flex flex-wrap gap-1.5">
+                                      {rec.complementary_solutions.map((sol, idx) => (
+                                        <span key={idx} className="text-[10px] bg-black/5 text-black/60 px-2 py-1 rounded-md border border-black/5 font-medium">{sol}</span>
+                                      ))}
                                     </div>
                                   </div>
                                 </div>
@@ -506,40 +580,6 @@ export default function App() {
                           </div>
                         </div>
                       ))}
-                    </div>
-                  </section>
-
-                  {/* Next Steps & Validation */}
-                  <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-white border border-black/5 rounded-3xl p-8 shadow-sm space-y-6">
-                      <div className="flex items-center gap-2 text-black/40">
-                        <Rocket className="w-4 h-4" />
-                        <span className="text-[11px] font-bold uppercase tracking-widest">Next Step Suggestions</span>
-                      </div>
-                      <div className="space-y-4">
-                        <div>
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-black/40 mb-1">Demo Direction</p>
-                          <p className="text-sm text-black/70 leading-relaxed">{result?.next_steps.demo_direction}</p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] font-bold uppercase tracking-widest text-black/40 mb-1">Follow-up Focus</p>
-                          <p className="text-sm text-black/70 leading-relaxed">{result?.next_steps.follow_up_focus}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bg-white border border-black/5 rounded-3xl p-8 shadow-sm space-y-6">
-                      <div className="flex items-center gap-2 text-black/40">
-                        <Target className="w-4 h-4" />
-                        <span className="text-[11px] font-bold uppercase tracking-widest">What to ask next</span>
-                      </div>
-                      <div className="space-y-3">
-                        {result?.next_steps.validation_questions.map((q, i) => (
-                          <div key={i} className="flex gap-3 text-sm">
-                            <span className="text-blue-500 font-bold">?</span>
-                            <span className="text-black/70 italic">{q}</span>
-                          </div>
-                        ))}
-                      </div>
                     </div>
                   </section>
 

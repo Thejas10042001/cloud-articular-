@@ -108,18 +108,21 @@ export async function analyzeTranscript(transcript: string) {
         parts: [
           {
             text: `You are a senior enterprise cloud solutions architect and executive technology strategist.
-Analyze the following enterprise discovery call transcript and produce structured, executive-ready cloud modernization recommendations.
+Analyze the following enterprise discovery call transcript and produce a concise, action-oriented cloud modernization strategy.
 
 Transcript:
 ${transcript}
 
-Requirements:
-- Extract business context, political dynamics, risks, and constraints.
-- Identify architectural layers: foundation, identity, network, security, storage, compute, AI.
-- Recommend solutions strategically.
-- Tie every recommendation to transcript evidence.
-- Prioritize outcomes over technical buzzwords.
-- Avoid vague generic language.`,
+Strategic Requirements:
+1. Executive Precision: Provide a punchy executive summary focused on the "Why" and "What now".
+2. Business Outcomes: Clearly define the business value and expected outcomes for every recommendation.
+3. Immediate Next Steps: Provide concise, outcome-oriented immediate actions. Include specific, high-impact demo directions and targeted validation questions to confirm strategy fit.
+4. Architectural Layering: Map recommendations to Foundation, Identity, Network, Security, Storage, Compute, and AI layers.
+5. Use Case Alignment: Identify at least 5 distinct, high-impact use cases from the transcript. Format each using the STAR (Situation, Task, Action, Result) or SPAR framework as appropriate, but prioritize STAR for at least 2 of them. Each use case must include a specific "industry_relevance" scenario.
+6. Visual Strategy: Provide Mermaid.js code for a Use Case diagram and a System Technical Architecture diagram. The Use Case diagram must illustrate key actors (e.g., Client Stakeholders, Cloud Architect, Analysis System) and their interactions with the system. The System Technical Architecture diagram must visually represent the proposed cloud modernization strategy, showing the different architectural layers (Foundation, Identity, Network, Security, Storage, Compute, AI) and key AWS services recommended for each layer.
+7. Pricing & Pilot: Include specific, actionable AWS monthly pricing estimates for each recommendation. The pricing_model should specify typical AWS models (e.g., On-Demand, Reserved Instances, Spot Instances, or Serverless/Pay-as-you-go). The cost_breakdown must detail the calculation logic for all core services involved (e.g., "EC2 t3.medium x 2: $60/mo", "RDS db.t3.small: $45/mo", "S3 1TB: $23/mo"). Provide a measurable pilot project.
+
+Output must be executive-ready: concise, high-impact, and devoid of technical fluff.`,
           },
         ],
       },
