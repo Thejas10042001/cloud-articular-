@@ -700,18 +700,18 @@ export default function App() {
 
                   {/* Cloud Maturity Trend */}
                   {result?.cloud_maturity_trend && (
-                    <section className="space-y-6 animate-fade-in">
-                      <div className="flex items-center gap-2 text-black/40">
-                        <Activity className="w-4 h-4 text-indigo-500" />
-                        <span className="text-[11px] font-bold uppercase tracking-widest">Architecture Maturity Trend Projection</span>
+                    <section className="space-y-6 animate-fade-in text-zinc-300">
+                      <div className="flex items-center gap-2 text-zinc-500 select-none">
+                        <Activity className="w-4 h-4 text-indigo-400" />
+                        <span className="text-[10px] font-display font-medium uppercase tracking-widest">Architecture Maturity Trend Projection</span>
                       </div>
 
-                      <div className="bg-white border border-black/5 rounded-3xl p-6 md:p-8 shadow-sm">
+                      <div className="bg-zinc-950/50 backdrop-blur-md border border-zinc-900 rounded-3xl p-6 md:p-8 shadow-xl">
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center animate-fade-in">
                           
                           {/* Radar Chart SVG Visualizer Column */}
-                          <div className="lg:col-span-4 flex flex-col items-center justify-center bg-zinc-50/50 rounded-2xl p-6 border border-zinc-100 select-none">
-                            <h4 className="text-xs font-extrabold uppercase tracking-widest text-zinc-400 mb-4 text-center">Score Profile Visualizer</h4>
+                          <div className="lg:col-span-4 flex flex-col items-center justify-center bg-zinc-950/80 rounded-2xl p-6 border border-zinc-900 select-none shadow-inner">
+                            <h4 className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#a1a1aa] mb-4 text-center">Score Profile Visualizer</h4>
                             
                             <div className="relative w-full max-w-[280px] aspect-square">
                               <svg viewBox="0 0 320 320" className="w-full h-full overflow-visible">
@@ -741,14 +741,14 @@ export default function App() {
                                       <polygon
                                         points={points}
                                         fill="none"
-                                        stroke="#F1F5F9"
+                                        stroke="rgba(63, 63, 70, 0.45)"
                                         strokeWidth="1.5"
                                         strokeDasharray="4 2"
                                       />
                                       <text
                                         x={164}
                                         y={160 - level * 24 + 4}
-                                        className="text-[9px] font-mono font-bold fill-zinc-400"
+                                        className="text-[9px] font-mono font-bold fill-zinc-600"
                                       >
                                         {level}
                                       </text>
@@ -757,8 +757,8 @@ export default function App() {
                                 })}
 
                                 {/* Axis lines */}
-                                <line x1={160} y1={28} x2={160} y2={292} stroke="#E2E8F0" strokeWidth="1" />
-                                <line x1={28} y1={160} x2={292} y2={160} stroke="#E2E8F0" strokeWidth="1" />
+                                <line x1={160} y1={28} x2={160} y2={292} stroke="rgba(63, 63, 70, 0.45)" strokeWidth="1" />
+                                <line x1={28} y1={160} x2={292} y2={160} stroke="rgba(63, 63, 70, 0.45)" strokeWidth="1" />
 
                                 {/* Axis Labels with bold design */}
                                 <text x={160} y={18} textAnchor="middle" className="text-[10px] font-extrabold uppercase tracking-wider fill-zinc-500">Security</text>
@@ -826,7 +826,7 @@ export default function App() {
                                           cy={coord.y}
                                           r="4.5"
                                           fill="#6366f1"
-                                          stroke="#ffffff"
+                                          stroke="#09090b"
                                           strokeWidth="1.5"
                                           className="filter drop-shadow-sm select-none"
                                         />
@@ -840,7 +840,7 @@ export default function App() {
                                           cy={coord.y}
                                           r="4"
                                           fill="#ef4444"
-                                          stroke="#ffffff"
+                                          stroke="#09090b"
                                           strokeWidth="1.5"
                                           className="filter drop-shadow-sm select-none"
                                         />
@@ -906,7 +906,7 @@ export default function App() {
                                         {/* Current rating percent baseline out of 5 */}
                                         <div className="bg-red-500 transition-all duration-500" style={{ width: `${item.data.current * 20}%` }} />
                                         {/* Target growth delta gap */}
-                                        <div className="bg-indigo-50 border-l border-zinc-950/25 transition-all duration-500" style={{ width: `${delta * 20}%` }} />
+                                        <div className="bg-indigo-500 border-l border-zinc-950/40 transition-all duration-500" style={{ width: `${delta * 20}%` }} />
                                       </div>
                                     </div>
                                   </div>
@@ -1009,14 +1009,14 @@ export default function App() {
 
                   {/* Interactive Multi-Cloud Side-by-Side Comparison Table */}
                   {result?.top_recommendations && (
-                    <section className="space-y-6 animate-fade-in text-[#1A1A1A]">
+                    <section className="space-y-6 animate-fade-in text-zinc-350">
                       <div className="flex items-center justify-between flex-wrap gap-4">
-                        <div className="flex items-center gap-2 text-black/40">
-                          <Table className="w-4 h-4 text-indigo-500" />
-                          <span className="text-[11px] font-bold uppercase tracking-widest">Multi-Cloud Pricing & Service Comparison</span>
+                        <div className="flex items-center gap-2 text-zinc-500 text-[10px] font-display font-medium uppercase tracking-widest">
+                          <Table className="w-4 h-4 text-indigo-400 animate-pulse" />
+                          <span className="text-[10px] font-display font-medium uppercase tracking-widest">Multi-Cloud Pricing & Service Comparison</span>
                         </div>
-                        <div className="flex items-center gap-2 text-xs font-semibold bg-white border border-black/5 rounded-full p-1 select-none">
-                          <span className="px-2 text-[9px] text-zinc-400 font-bold uppercase">Focus Column:</span>
+                        <div className="flex items-center gap-2 text-xs font-semibold bg-zinc-950 border border-zinc-900 rounded-full p-1 select-none">
+                          <span className="px-2 text-[9px] text-zinc-500 font-bold uppercase">Focus Column:</span>
                           {(['None', 'AWS', 'Azure', 'GCP'] as const).map((prov) => {
                             const isSelected = (prov === 'None' && highlightCloud === null) || highlightCloud === prov;
                             return (
@@ -1027,7 +1027,7 @@ export default function App() {
                                   "px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all",
                                   isSelected 
                                     ? "bg-indigo-600 text-white shadow-sm" 
-                                    : "text-zinc-500 hover:text-indigo-650"
+                                    : "text-zinc-500 hover:text-zinc-300"
                                 )}
                               >
                                 {prov}
@@ -1037,7 +1037,7 @@ export default function App() {
                         </div>
                       </div>
 
-                      <div className="bg-white border border-black/5 rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
+                      <div className="bg-zinc-950/50 backdrop-blur-md border border-zinc-900 rounded-3xl p-6 md:p-8 shadow-xl space-y-6">
                         {/* Summary Header Cards comparing TOTAL estimate costs */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           {/* AWS Total Card */}
@@ -1059,12 +1059,12 @@ export default function App() {
                             return (
                               <div className={cn(
                                 "border rounded-2xl p-5 transition-all relative overflow-hidden",
-                                isCheaper ? "bg-orange-50/10 border-orange-500/20 shadow-sm" : "border-black/5 bg-zinc-50/20"
+                                isCheaper ? "bg-orange-500/10 border-orange-500/30 shadow-lg" : "border-zinc-900 bg-zinc-950/35"
                               )}>
-                                <div className="absolute top-4 right-4 bg-orange-100 text-orange-700 text-[8px] font-black px-2 py-0.5 rounded uppercase">AWS</div>
-                                <span className="text-zinc-400 text-[9px] font-black uppercase tracking-widest block">Total AWS OpEx</span>
-                                <span className="text-2xl font-black text-zinc-900 block mt-1">${awsTotal.toFixed(2)}<span className="text-xs text-zinc-400 font-semibold">/mo</span></span>
-                                {isCheaper && <span className="text-[9px] text-emerald-600 font-semibold mt-2 inline-flex items-center gap-1 select-none">✨ Cost Leader</span>}
+                                <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[8px] font-black px-2 py-0.5 rounded uppercase">AWS</div>
+                                <span className="text-zinc-500 text-[9px] font-black uppercase tracking-widest block">Total AWS OpEx</span>
+                                <span className="text-2xl font-black text-zinc-100 block mt-1">${awsTotal.toFixed(2)}<span className="text-xs text-zinc-500 font-semibold">/mo</span></span>
+                                {isCheaper && <span className="text-[9px] text-emerald-400 font-semibold mt-2 inline-flex items-center gap-1 select-none">✨ Cost Leader</span>}
                               </div>
                             );
                           })()}
@@ -1088,12 +1088,12 @@ export default function App() {
                             return (
                               <div className={cn(
                                 "border rounded-2xl p-5 transition-all relative overflow-hidden",
-                                isCheaper ? "bg-blue-50/10 border-blue-500/20 shadow-sm" : "border-black/5 bg-zinc-50/20"
+                                isCheaper ? "bg-blue-500/10 border-blue-500/30 shadow-lg" : "border-zinc-900 bg-zinc-950/35"
                               )}>
-                                <div className="absolute top-4 right-4 bg-blue-100 text-blue-700 text-[8px] font-black px-2 py-0.5 rounded uppercase">Azure</div>
-                                <span className="text-zinc-400 text-[9px] font-black uppercase tracking-widest block">Total Azure OpEx</span>
-                                <span className="text-2xl font-black text-zinc-900 block mt-1">${azureTotal.toFixed(2)}<span className="text-xs text-zinc-400 font-semibold">/mo</span></span>
-                                {isCheaper && <span className="text-[9px] text-emerald-600 font-semibold mt-2 inline-flex items-center gap-1 select-none">✨ Cost Leader</span>}
+                                <div className="absolute top-4 right-4 bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[8px] font-black px-2 py-0.5 rounded uppercase">Azure</div>
+                                <span className="text-zinc-500 text-[9px] font-black uppercase tracking-widest block">Total Azure OpEx</span>
+                                <span className="text-2xl font-black text-zinc-100 block mt-1">${azureTotal.toFixed(2)}<span className="text-xs text-zinc-500 font-semibold">/mo</span></span>
+                                {isCheaper && <span className="text-[9px] text-emerald-400 font-semibold mt-2 inline-flex items-center gap-1 select-none">✨ Cost Leader</span>}
                               </div>
                             );
                           })()}
@@ -1117,12 +1117,12 @@ export default function App() {
                             return (
                               <div className={cn(
                                 "border rounded-2xl p-5 transition-all relative overflow-hidden",
-                                isCheaper ? "bg-cyan-50/10 border-cyan-500/20 shadow-sm" : "border-black/5 bg-zinc-50/20"
+                                isCheaper ? "bg-cyan-500/10 border-cyan-500/30 shadow-lg" : "border-zinc-900 bg-zinc-950/35"
                               )}>
-                                <div className="absolute top-4 right-4 bg-cyan-100 text-cyan-700 text-[8px] font-black px-2 py-0.5 rounded uppercase">GCP</div>
-                                <span className="text-zinc-400 text-[9px] font-black uppercase tracking-widest block">Total GCP OpEx</span>
-                                <span className="text-2xl font-black text-zinc-900 block mt-1">${gcpTotal.toFixed(2)}<span className="text-xs text-zinc-400 font-semibold">/mo</span></span>
-                                {isCheaper && <span className="text-[9px] text-emerald-600 font-semibold mt-2 inline-flex items-center gap-1 select-none">✨ Cost Leader</span>}
+                                <div className="absolute top-4 right-4 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-[8px] font-black px-2 py-0.5 rounded uppercase">GCP</div>
+                                <span className="text-zinc-500 text-[9px] font-black uppercase tracking-widest block">Total GCP OpEx</span>
+                                <span className="text-2xl font-black text-zinc-100 block mt-1">${gcpTotal.toFixed(2)}<span className="text-xs text-zinc-500 font-semibold">/mo</span></span>
+                                {isCheaper && <span className="text-[9px] text-emerald-400 font-semibold mt-2 inline-flex items-center gap-1 select-none">✨ Cost Leader</span>}
                               </div>
                             );
                           })()}
