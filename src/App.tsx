@@ -31,11 +31,13 @@ import {
   Link2,
   Flag,
   UserCheck,
-  Table
+  Table,
+  Briefcase
 } from 'lucide-react';
 import mermaid from 'mermaid';
 import { analyzeTranscript } from './services/geminiService';
 import { cn } from './lib/utils';
+import ProposalHub from './components/ProposalHub';
 
 mermaid.initialize({
   startOnLoad: true,
@@ -162,6 +164,116 @@ interface AnalysisResult {
     recommended_winner: 'AWS' | 'Azure' | 'GCP';
   };
   executive_summary: string;
+  proposal_hub: {
+    proposal_quality_score: number;
+    win_probability_score: number;
+    ai_recommendations: string[];
+    follow_up_actions: string[];
+    next_meeting_prep: {
+      objectives: string[];
+      suggested_agenda: string[];
+      answers_to_objections: string[];
+    };
+    competitor_analysis: {
+      competitor_name: string;
+      weaknesses: string;
+      our_strengths: string;
+      battle_card: string;
+    }[];
+    recommended_solutions: {
+      ai_executive_summary: string;
+      business_value_prop: string;
+      competitive_advantages: string[];
+      roi_highlights: string[];
+      risk_mitigations: string[];
+      strategic_alignment_score: number;
+    };
+    use_case_section: {
+      resolved_problem_statement: string;
+      expected_business_outcomes: string[];
+      success_criteria: string[];
+      kpi_mapping: string[];
+      use_case_maturity_assessment: string;
+    };
+    technical_architecture_section: {
+      cloud_deployment_recommendations: string;
+      security_architecture: string;
+      integration_mapping: string[];
+      scalability_analysis: string;
+      infra_sizing_recommendations: string[];
+    };
+    investment_and_pricing: {
+      capex_vs_opex: string;
+      subscription_model_recommendations: string;
+      cost_optimization_suggestions: string[];
+      multiyear_pricing_forecast: {
+        year1: string;
+        year3: string;
+        year5: string;
+      };
+      budget_fit_score: number;
+      payment_milestone_planning: string[];
+    };
+    tco_analysis: {
+      tco_1yr: string;
+      tco_3yr: string;
+      tco_5yr: string;
+      infrastructure_costs: string;
+      licensing_costs: string;
+      maintenance_costs: string;
+      support_costs: string;
+      savings_analysis: string;
+    };
+    client_references: {
+      customer_name: string;
+      industry: string;
+      story_summary: string;
+      before_after_impact: string;
+      reference_matching_score: number;
+      testimonial_quote: string;
+    }[];
+    meddic: {
+      metrics: {
+        revenue_impact_estimate: string;
+        cost_savings_calc: string;
+        productivity_metrics: string;
+        roi_percent: number;
+        kpi_benefit_summary: string[];
+      };
+      economic_buyer: {
+        stakeholder_id: string;
+        influence_score: number;
+        budget_ownership: string;
+        executive_engagement_recs: string[];
+      };
+      decision_criteria: {
+        functional_reqs: string[];
+        technical_reqs: string[];
+        compliance_reqs: string[];
+        priority_ranking: string[];
+      };
+      decision_process: {
+        procurement_stage: string;
+        approval_workflow: string[];
+        timeline_prediction: string;
+        risk_assessment: string;
+      };
+      pain_points: {
+        extracted_pains: {
+          pain: string;
+          severity_score: number;
+          business_impact: string;
+          recommended_solution_map: string;
+        }[];
+      };
+      champion: {
+        champion_engagement_score: number;
+        internal_influence_mapping: string;
+        relationship_strength_indicator: string;
+        action_recommendations: string[];
+      };
+    };
+  };
 }
 
 const LAYER_ICONS: Record<string, React.ReactNode> = {
@@ -193,6 +305,7 @@ export default function App() {
   const [tableSortBy, setTableSortBy] = useState<'layer' | 'aws' | 'azure' | 'gcp'>('layer');
   const [highlightCloud, setHighlightCloud] = useState<'AWS' | 'Azure' | 'GCP' | null>(null);
   const [recCardProvider, setRecCardProvider] = useState<Record<number, 'AWS' | 'Azure' | 'GCP'>>({});
+  const [activeTab, setActiveTab] = useState<'blueprint' | 'proposal'>('blueprint');
 
   const loadSample = () => setTranscript(SAMPLE_TRANSCRIPT);
 
@@ -370,9 +483,46 @@ export default function App() {
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="space-y-10 pb-20"
+                  className="space-y-6 pb-20"
                 >
-                  {/* Executive Summary */}
+                  {/* Tab Switcher */}
+                  <div className="flex items-center justify-between border-b border-zinc-900 pb-4 mb-2 flex-wrap gap-4">
+                    <div className="flex items-center gap-1.5 p-1 bg-zinc-950 border border-zinc-900 rounded-2xl">
+                      <button
+                        onClick={() => setActiveTab('blueprint')}
+                        className={cn(
+                          "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer",
+                          activeTab === 'blueprint' 
+                            ? "bg-indigo-600/20 text-indigo-400 border border-indigo-500/25 shadow-lg"
+                            : "text-zinc-400 hover:text-zinc-200"
+                        )}
+                      >
+                        <Layers className="w-3.5 h-3.5" />
+                        Architectural Blueprint
+                      </button>
+                      <button
+                        onClick={() => setActiveTab('proposal')}
+                        className={cn(
+                          "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer",
+                          activeTab === 'proposal'
+                            ? "bg-cyan-600/20 text-cyan-400 border border-cyan-500/20 shadow-lg"
+                            : "text-zinc-400 hover:text-zinc-200"
+                        )}
+                      >
+                        <Briefcase className="w-3.5 h-3.5" />
+                        Enterprise Proposal Hub
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-500 select-none">
+                      <span>Proposal Status:</span>
+                      <span className="text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-0.5 rounded-full uppercase">Ready</span>
+                    </div>
+                  </div>
+
+                  {activeTab === 'blueprint' ? (
+                    <>
+                      {/* Executive Summary */}
                   <section className="space-y-4">
                     <div className="flex items-center gap-2 text-zinc-500 select-none">
                       <Target className="w-4 h-4 text-indigo-400" />
@@ -1426,6 +1576,10 @@ export default function App() {
                       </div>
                     </div>
                   </section>
+                    </>
+                  ) : (
+                    <ProposalHub proposalHubData={result?.proposal_hub} transcript={transcript} recommendedWinner={result?.provider_comparison?.recommended_winner} />
+                  )}
 
                 </motion.div>
               )}
