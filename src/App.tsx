@@ -32,7 +32,11 @@ import {
   Flag,
   UserCheck,
   Table,
-  Briefcase
+  Briefcase,
+  Settings,
+  Key,
+  X,
+  ExternalLink
 } from 'lucide-react';
 import mermaid from 'mermaid';
 import { analyzeTranscript } from './services/geminiService';
@@ -307,7 +311,29 @@ export default function App() {
   const [recCardProvider, setRecCardProvider] = useState<Record<number, 'AWS' | 'Azure' | 'GCP'>>({});
   const [activeTab, setActiveTab] = useState<'blueprint' | 'proposal'>('blueprint');
 
+  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [userApiKey, setUserApiKey] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('gemini_api_key') || '';
+    }
+    return '';
+  });
+
   const loadSample = () => setTranscript(SAMPLE_TRANSCRIPT);
+
+  const handleSaveApiKey = (key: string) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('gemini_api_key', key.trim());
+    }
+    setUserApiKey(key.trim());
+  };
+
+  const handleClearApiKey = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('gemini_api_key');
+    }
+    setUserApiKey('');
+  };
 
   const handleAnalyze = async () => {
     if (!transcript.trim()) return;
@@ -317,9 +343,13 @@ export default function App() {
     try {
       const data = await analyzeTranscript(transcript);
       setResult(data);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setError('Failed to analyze transcript. Please check your API key and try again.');
+      if (err?.message === "API_KEY_MISSING") {
+        setError('Gemini API key is required. Please set up your GEMINI_API_KEY environment variable, or configure a custom API Key via the settings.');
+      } else {
+        setError(err instanceof Error ? err.message : 'Failed to analyze transcript. Please check your API key and try again.');
+      }
     } finally {
       setIsAnalyzing(false);
     }
@@ -352,10 +382,20 @@ export default function App() {
               </p>
             </div>
           </div>
-          <div className="hidden md:flex items-center gap-4">
-            <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-zinc-400 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <span className="hidden sm:inline-block text-[9px] font-mono font-bold uppercase tracking-widest text-zinc-400 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full">
               Enterprise Suite v1.1
             </span>
+            <button
+              onClick={() => setShowApiKeyModal(true)}
+              className="group flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800/80 text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-700 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider cursor-pointer select-none transition-all duration-200"
+            >
+              <Settings className="w-3.5 h-3.5 text-indigo-400 group-hover:rotate-45 transition-transform duration-300" />
+              <span>{userApiKey ? "Key Safe" : "API Config"}</span>
+              {userApiKey && (
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              )}
+            </button>
           </div>
         </div>
       </header>
@@ -436,9 +476,26 @@ export default function App() {
               </div>
 
               {error && (
-                <p className="text-red-400 text-xs font-semibold bg-red-950/30 p-3.5 rounded-xl border border-red-900/50 animate-pulse">
-                  {error}
-                </p>
+                <div className="text-red-400 text-xs font-semibold bg-red-950/35 p-4 rounded-xl border border-red-900/50 space-y-3">
+                  <p className="leading-relaxed">{error}</p>
+                  <div className="flex flex-wrap gap-2 pt-1 select-none">
+                    <button
+                      type="button"
+                      onClick={() => setShowApiKeyModal(true)}
+                      className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 border border-indigo-500/25 rounded-lg text-[10px] uppercase font-bold tracking-wider text-white transition-colors cursor-pointer"
+                    >
+                      Configure Custom Key
+                    </button>
+                    <a
+                      href="https://aistudio.google.com/apikey"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg text-[10px] uppercase font-bold tracking-wider text-zinc-400 hover:text-zinc-200 transition-colors flex items-center gap-1"
+                    >
+                      Get Free Key <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
               )}
             </section>
           </div>
@@ -1587,6 +1644,105 @@ export default function App() {
           </div>
         </div>
       </main>
+
+      {/* API Key Modal Overlay */}
+      <AnimatePresence>
+        {showApiKeyModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowApiKeyModal(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+            />
+
+            {/* Modal Box */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+              className="relative w-full max-w-md bg-zinc-950 border border-zinc-900 rounded-2xl p-6 md:p-8 shadow-2xl space-y-6 z-10 overflow-hidden text-left"
+            >
+              <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none" />
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 bg-indigo-600/10 border border-indigo-500/20 rounded-xl">
+                    <Key className="w-5 h-5 text-indigo-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold tracking-tight text-white">Gemini API Key</h3>
+                    <p className="text-[10px] text-zinc-500 font-mono">Custom API configuration</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowApiKeyModal(false)}
+                  className="p-1.5 hover:bg-zinc-900 text-zinc-500 hover:text-zinc-300 rounded-lg transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  When deploying to <span className="font-semibold text-zinc-250 text-zinc-300">Vercel</span>, static builds embed variables at build time. To make this app immediately functional on your live URL, paste your Gemini API key below, or configure a Vercel build variable named <code className="text-indigo-400 font-mono text-[10px] bg-indigo-500/5 border border-indigo-500/15 px-1 py-0.5 rounded">GEMINI_API_KEY</code>.
+                </p>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 block">
+                    Your Gemini API Key
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="password"
+                      value={userApiKey}
+                      onChange={(e) => handleSaveApiKey(e.target.value)}
+                      placeholder="AIzaSy..."
+                      className="w-full bg-zinc-950 border border-zinc-900 rounded-xl px-4 py-3 text-xs text-zinc-100 placeholder-zinc-800 font-mono focus:outline-none focus:border-indigo-500/50 transition-all shadow-inner"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="text-[9px] font-mono text-zinc-500">
+                      {userApiKey ? "✓ Saved to local storage" : "No custom key entered (uses build-time fallback)"}
+                    </span>
+                    {userApiKey && (
+                      <button
+                        type="button"
+                        onClick={handleClearApiKey}
+                        className="text-[9px] font-mono font-bold uppercase tracking-wider text-red-500 hover:text-red-400 transition-colors cursor-pointer"
+                      >
+                        Clear Custom Key
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-zinc-900 pt-5 flex items-center justify-between text-[11px] gap-4">
+                <a
+                  href="https://aistudio.google.com/apikey"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-400 hover:text-indigo-300 transition-colors inline-flex items-center gap-1 font-bold"
+                >
+                  Request a free key <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setShowApiKeyModal(false)}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold font-display uppercase tracking-wider transition-colors cursor-pointer shadow-md"
+                >
+                  Done
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

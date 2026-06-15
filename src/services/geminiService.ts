@@ -1,6 +1,14 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+export function getApiKey(): string {
+  if (typeof window !== "undefined") {
+    const localKey = localStorage.getItem("gemini_api_key");
+    if (localKey && localKey.trim()) {
+      return localKey.trim();
+    }
+  }
+  return (process.env.GEMINI_API_KEY || "").trim();
+}
 
 export const ARCHITECT_SCHEMA = {
   type: Type.OBJECT,
@@ -290,6 +298,11 @@ export const ARCHITECT_SCHEMA = {
 };
 
 export async function analyzeTranscript(transcript: string) {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    throw new Error("API_KEY_MISSING");
+  }
+  const ai = new GoogleGenAI({ apiKey });
   const response = await ai.models.generateContent({
     model: "gemini-3.1-pro-preview",
     contents: [
