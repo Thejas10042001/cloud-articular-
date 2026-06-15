@@ -239,162 +239,34 @@ export const ARCHITECT_SCHEMA = {
         },
         recommended_solutions: {
           type: Type.OBJECT,
-          properties: {
-            ai_executive_summary: { type: Type.STRING },
-            business_value_prop: { type: Type.STRING },
-            competitive_advantages: { type: Type.ARRAY, items: { type: Type.STRING } },
-            roi_highlights: { type: Type.ARRAY, items: { type: Type.STRING } },
-            risk_mitigations: { type: Type.ARRAY, items: { type: Type.STRING } },
-            strategic_alignment_score: { type: Type.NUMBER }
-          },
-          required: ["ai_executive_summary", "business_value_prop", "competitive_advantages", "roi_highlights", "risk_mitigations", "strategic_alignment_score"]
+          description: "Detailed proposal object: ai_executive_summary, business_value_prop, competitive_advantages, roi_highlights, risk_mitigations, strategic_alignment_score"
         },
         use_case_section: {
           type: Type.OBJECT,
-          properties: {
-            resolved_problem_statement: { type: Type.STRING },
-            expected_business_outcomes: { type: Type.ARRAY, items: { type: Type.STRING } },
-            success_criteria: { type: Type.ARRAY, items: { type: Type.STRING } },
-            kpi_mapping: { type: Type.ARRAY, items: { type: Type.STRING } },
-            use_case_maturity_assessment: { type: Type.STRING }
-          },
-          required: ["resolved_problem_statement", "expected_business_outcomes", "success_criteria", "kpi_mapping", "use_case_maturity_assessment"]
+          description: "Detailed use case object: resolved_problem_statement, expected_business_outcomes, success_criteria, kpi_mapping, use_case_maturity_assessment"
         },
         technical_architecture_section: {
           type: Type.OBJECT,
-          properties: {
-            cloud_deployment_recommendations: { type: Type.STRING },
-            security_architecture: { type: Type.STRING },
-            integration_mapping: { type: Type.ARRAY, items: { type: Type.STRING } },
-            scalability_analysis: { type: Type.STRING },
-            infra_sizing_recommendations: { type: Type.ARRAY, items: { type: Type.STRING } }
-          },
-          required: ["cloud_deployment_recommendations", "security_architecture", "integration_mapping", "scalability_analysis", "infra_sizing_recommendations"]
+          description: "Detailed technical architecture object: cloud_deployment_recommendations, security_architecture, integration_mapping, scalability_analysis, infra_sizing_recommendations"
         },
         investment_and_pricing: {
           type: Type.OBJECT,
-          properties: {
-            capex_vs_opex: { type: Type.STRING },
-            subscription_model_recommendations: { type: Type.STRING },
-            cost_optimization_suggestions: { type: Type.ARRAY, items: { type: Type.STRING } },
-            multiyear_pricing_forecast: {
-              type: Type.OBJECT,
-              properties: {
-                year1: { type: Type.STRING },
-                year3: { type: Type.STRING },
-                year5: { type: Type.STRING }
-              },
-              required: ["year1", "year3", "year5"]
-            },
-            budget_fit_score: { type: Type.NUMBER },
-            payment_milestone_planning: { type: Type.ARRAY, items: { type: Type.STRING } }
-          },
-          required: ["capex_vs_opex", "subscription_model_recommendations", "cost_optimization_suggestions", "multiyear_pricing_forecast", "budget_fit_score", "payment_milestone_planning"]
+          description: "Detailed pricing object: capex_vs_opex, subscription_model_recommendations, cost_optimization_suggestions, multiyear_pricing_forecast, budget_fit_score, payment_milestone_planning"
         },
         tco_analysis: {
           type: Type.OBJECT,
-          properties: {
-            tco_1yr: { type: Type.STRING },
-            tco_3yr: { type: Type.STRING },
-            tco_5yr: { type: Type.STRING },
-            infrastructure_costs: { type: Type.STRING },
-            licensing_costs: { type: Type.STRING },
-            maintenance_costs: { type: Type.STRING },
-            support_costs: { type: Type.STRING },
-            savings_analysis: { type: Type.STRING }
-          },
-          required: ["tco_1yr", "tco_3yr", "tco_5yr", "infrastructure_costs", "licensing_costs", "maintenance_costs", "support_costs", "savings_analysis"]
+          description: "Detailed TCO analysis object: tco_1yr, tco_3yr, tco_5yr, infrastructure_costs, licensing_costs, maintenance_costs, support_costs, savings_analysis"
         },
         client_references: {
           type: Type.ARRAY,
           items: {
-            type: Type.OBJECT,
-            properties: {
-              customer_name: { type: Type.STRING },
-              industry: { type: Type.STRING },
-              story_summary: { type: Type.STRING },
-              before_after_impact: { type: Type.STRING },
-              reference_matching_score: { type: Type.NUMBER },
-              testimonial_quote: { type: Type.STRING }
-            },
-            required: ["customer_name", "industry", "story_summary", "before_after_impact", "reference_matching_score", "testimonial_quote"]
-          }
+            type: Type.OBJECT
+          },
+          description: "Array of customer references: customer_name, industry, story_summary, before_after_impact, reference_matching_score, testimonial_quote"
         },
         meddic: {
           type: Type.OBJECT,
-          properties: {
-            metrics: {
-              type: Type.OBJECT,
-              properties: {
-                revenue_impact_estimate: { type: Type.STRING },
-                cost_savings_calc: { type: Type.STRING },
-                productivity_metrics: { type: Type.STRING },
-                roi_percent: { type: Type.NUMBER },
-                kpi_benefit_summary: { type: Type.ARRAY, items: { type: Type.STRING } }
-              },
-              required: ["revenue_impact_estimate", "cost_savings_calc", "productivity_metrics", "roi_percent", "kpi_benefit_summary"]
-            },
-            economic_buyer: {
-              type: Type.OBJECT,
-              properties: {
-                stakeholder_id: { type: Type.STRING },
-                influence_score: { type: Type.NUMBER },
-                budget_ownership: { type: Type.STRING },
-                executive_engagement_recs: { type: Type.ARRAY, items: { type: Type.STRING } }
-              },
-              required: ["stakeholder_id", "influence_score", "budget_ownership", "executive_engagement_recs"]
-            },
-            decision_criteria: {
-              type: Type.OBJECT,
-              properties: {
-                functional_reqs: { type: Type.ARRAY, items: { type: Type.STRING } },
-                technical_reqs: { type: Type.ARRAY, items: { type: Type.STRING } },
-                compliance_reqs: { type: Type.ARRAY, items: { type: Type.STRING } },
-                priority_ranking: { type: Type.ARRAY, items: { type: Type.STRING } }
-              },
-              required: ["functional_reqs", "technical_reqs", "compliance_reqs", "priority_ranking"]
-            },
-            decision_process: {
-              type: Type.OBJECT,
-              properties: {
-                procurement_stage: { type: Type.STRING },
-                approval_workflow: { type: Type.ARRAY, items: { type: Type.STRING } },
-                timeline_prediction: { type: Type.STRING },
-                risk_assessment: { type: Type.STRING }
-              },
-              required: ["procurement_stage", "approval_workflow", "timeline_prediction", "risk_assessment"]
-            },
-            pain_points: {
-              type: Type.OBJECT,
-              properties: {
-                extracted_pains: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      pain: { type: Type.STRING },
-                      severity_score: { type: Type.NUMBER },
-                      business_impact: { type: Type.STRING },
-                      recommended_solution_map: { type: Type.STRING }
-                    },
-                    required: ["pain", "severity_score", "business_impact", "recommended_solution_map"]
-                  }
-                }
-              },
-              required: ["extracted_pains"]
-            },
-            champion: {
-              type: Type.OBJECT,
-              properties: {
-                champion_engagement_score: { type: Type.NUMBER },
-                internal_influence_mapping: { type: Type.STRING },
-                relationship_strength_indicator: { type: Type.STRING },
-                action_recommendations: { type: Type.ARRAY, items: { type: Type.STRING } }
-              },
-              required: ["champion_engagement_score", "internal_influence_mapping", "relationship_strength_indicator", "action_recommendations"]
-            }
-          },
-          required: ["metrics", "economic_buyer", "decision_criteria", "decision_process", "pain_points", "champion"]
+          description: "Dynamic MEDDIC scorecard object (metrics, economic_buyer, decision_criteria, decision_process, pain_points, champion)"
         }
       },
       required: [
