@@ -49,28 +49,95 @@ mermaid.initialize({
   securityLevel: 'loose',
 });
 
+const cleanMermaidChart = (rawChart: string): string => {
+  if (!rawChart) return '';
+  let cleaned = rawChart.trim();
+  
+  // Strip Markdown code blocks
+  if (cleaned.startsWith('```mermaid')) {
+    cleaned = cleaned.substring('```mermaid'.length).trim();
+  } else if (cleaned.startsWith('```')) {
+    cleaned = cleaned.substring('```'.length).trim();
+  }
+  
+  if (cleaned.endsWith('```')) {
+    cleaned = cleaned.slice(0, -3).trim();
+  }
+  
+  return cleaned;
+};
+
 const Mermaid = ({ chart }: { chart: string }) => {
-  const ref = React.useRef<HTMLDivElement>(null);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [errorDetails, setErrorDetails] = React.useState<string | null>(null);
 
   React.useEffect(() => {
+    if (!containerRef.current) return;
+    
+    const cleaned = cleanMermaidChart(chart);
+    if (!cleaned) {
+      containerRef.current.innerHTML = '<div class="text-zinc-500 text-xs font-mono">No diagram data available</div>';
+      setErrorDetails(null);
+      return;
+    }
+
+    setErrorDetails(null);
+    const id = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
+
     const renderChart = async () => {
-      if (ref.current && chart) {
-        try {
-          ref.current.removeAttribute('data-processed');
-          await mermaid.run({
-            nodes: [ref.current],
-          });
-        } catch (err) {
-          console.error('Mermaid render error:', err);
+      try {
+        containerRef.current!.innerHTML = `
+          <div class="flex items-center gap-2 text-zinc-500 text-xs font-mono">
+            <span class="w-2 h-2 rounded-full bg-indigo-500 animate-ping"></span>
+            Rendering architectural model...
+          </div>
+        `;
+        
+        const { svg } = await mermaid.render(id, cleaned);
+        
+        if (containerRef.current) {
+          containerRef.current.innerHTML = svg;
+          const svgEl = containerRef.current.querySelector('svg');
+          if (svgEl) {
+            svgEl.style.maxWidth = '100%';
+            svgEl.style.height = 'auto';
+            svgEl.style.background = 'transparent';
+          }
+        }
+      } catch (err: any) {
+        console.error('Mermaid render error:', err);
+        setErrorDetails(err instanceof Error ? err.message : String(err));
+        if (containerRef.current) {
+          containerRef.current.innerHTML = `
+            <div class="flex flex-col items-center justify-center p-6 text-center space-y-3 max-w-lg">
+              <div class="p-2.5 bg-red-500/10 border border-red-500/25 rounded-xl text-red-400">
+                <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              </div>
+              <div class="space-y-1">
+                <p class="text-xs font-bold text-zinc-300">Architectural Diagram Render Failed</p>
+                <p class="text-[10px] text-zinc-500 max-w-xs leading-relaxed font-mono">The generated diagram code contains a Mermaid compilation error.</p>
+              </div>
+            </div>
+          `;
         }
       }
     };
+
     renderChart();
   }, [chart]);
 
   return (
-    <div className="mermaid bg-zinc-950/80 border border-zinc-800 p-6 rounded-2xl overflow-x-auto min-h-[220px] flex items-center justify-center shadow-inner relative group/mermaid" ref={ref}>
-      {chart}
+    <div className="space-y-3">
+      <div 
+        ref={containerRef} 
+        className="bg-zinc-950/80 border border-zinc-800 p-6 rounded-2xl overflow-x-auto min-h-[220px] flex items-center justify-center shadow-inner relative group/mermaid"
+      />
+      {errorDetails && (
+        <div className="bg-zinc-900/30 border border-zinc-900 rounded-xl p-4 text-[10px] font-mono text-zinc-500 select-all overflow-x-auto max-h-48 whitespace-pre leading-relaxed">
+          <p className="font-bold text-zinc-400 uppercase mb-2">RAW MERMAID DATA FOR DEBUGGING:</p>
+          {cleanMermaidChart(chart)}
+        </div>
+      )}
     </div>
   );
 };
